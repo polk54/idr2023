@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focused Interactive Data Visualization Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        #sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .visualization {
+            display: none;
+            margin-bottom: 30px;
+        }
+        .active {
+            display: block;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .chart-container {
+            position: relative;
+            height: 60vh;
+            width: 100%;
+        }
+    </style>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:WBDocs_Local_Document_Type msdt:dt="string"></mso:WBDocs_Local_Document_Type>
+<mso:o1cb080a3dca4eb8a0fd03c7cc8bf8f7 msdt:dt="string"></mso:o1cb080a3dca4eb8a0fd03c7cc8bf8f7>
+<mso:WBDocs_Originating_Unit msdt:dt="string">5;#DECDG - Development Data Group|2ae5ce6c-bf4c-4936-8a28-da4d57c09588</mso:WBDocs_Originating_Unit>
+<mso:MediaServiceImageTags msdt:dt="string"></mso:MediaServiceImageTags>
+<mso:lcf76f155ced4ddcb4097134ff3c332f msdt:dt="string"></mso:lcf76f155ced4ddcb4097134ff3c332f>
+<mso:TaxCatchAll msdt:dt="string">5;#DECDG - Development Data Group|2ae5ce6c-bf4c-4936-8a28-da4d57c09588</mso:TaxCatchAll>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <div id="sidebar">
+        <button onclick="showVisualization('externalDebtStocks')">External Debt Stocks</button>
+        <button onclick="showVisualization('externalDebtShare')">Share of External Debt Stocks</button>
+        <button onclick="showVisualization('sdrAllocations')">SDR Allocations</button>
+    </div>
+    <div id="content">
+        <div id="externalDebtStocks" class="visualization active">
+            <h2>Figure 1.1 Percent Change in External Debt Stocks of Low- and Middle-income Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="externalDebtStocksChart"></canvas></div>
+            <p>Source: World Bank International Debt Statistics database.</p>
+            <p>Note: IDA = International Development Association.</p>
+        </div>
+        <div id="externalDebtShare" class="visualization">
+            <h2>Figure 1.2 Share of External Debt Stocks of Low- and Middle-Income Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="externalDebtShareChart"></canvas></div>
+            <p>Source: World Bank International Debt Statistics database.</p>
+            <p>Note: The top ten largest borrowers are based on total external debt stock at year-end 2022. The top ten largest borrowers excluding China are: Argentina, Brazil, Colombia, India, Indonesia, Mexico, Russian Federation, South Africa, Thailand and Türkiye.</p>
+        </div>
+        <div id="sdrAllocations" class="visualization">
+            <h2>Figure B1.1.1 SDR Allocations as a Share of General Government External Debt and International Reserves, by Region, 2022</h2>
+            <div class="chart-container"><canvas id="sdrAllocationsChart"></canvas></div>
+            <p>Sources: World Bank Debtor Reporting System and International Monetary Fund</p>
+            <p>Note: SDR = special drawing rights.</p>
+        </div>
+    </div>
+
+    <script>
+        function showVisualization(id) {
+            const visualizations = document.getElementsByClassName('visualization');
+            for (let vis of visualizations) {
+                vis.classList.remove('active');
+            }
+            document.getElementById(id).classList.add('active');
+        }
+
+        // External Debt Stocks Chart
+        const externalDebtStocksCtx = document.getElementById('externalDebtStocksChart').getContext('2d');
+        new Chart(externalDebtStocksCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Low- and middle-income countries', 'China', 'Low- and middle-income countries (excluding China)', 'IDA-eligible countries', 'Low- and middle-income countries (excluding China and IDA-eligible countries)'],
+                datasets: [{
+                    label: 'Average 2012 to 2019',
+                    data: [7, 16, 5, 10, 5],
+                    backgroundColor: 'rgba(65, 105, 225, 0.8)', // Royal Blue
+                }, {
+                    label: '2021',
+                    data: [6, 10, 5, 10, 3],
+                    backgroundColor: 'rgba(255, 165, 0, 0.8)', // Orange
+                }, {
+                    label: '2022',
+                    data: [-3, -12, 0, 3, 0],
+                    backgroundColor: 'rgba(34, 139, 34, 0.8)', // Forest Green
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Percent Change in External Debt Stocks of Low- and Middle-income Countries, 2012-22'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Percent'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Share of External Debt Stocks Chart
+        const externalDebtShareCtx = document.getElementById('externalDebtShareChart').getContext('2d');
+        new Chart(externalDebtShareCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+                datasets: [{
+                    label: 'Top ten countries, excluding China',
+                    data: [53, 51, 49, 51, 51, 49, 47, 46, 44, 42, 43],
+                    backgroundColor: 'rgba(65, 105, 225, 0.8)', // Royal Blue
+                }, {
+                    label: 'China',
+                    data: [20, 23, 26, 21, 21, 23, 25, 26, 27, 29, 27],
+                    backgroundColor: 'rgba(255, 165, 0, 0.8)', // Orange
+                }, {
+                    label: 'Other low- and middle-income countries',
+                    data: [27, 26, 25, 28, 28, 28, 28, 28, 29, 29, 31],
+                    backgroundColor: 'rgba(34, 139, 34, 0.8)', // Forest Green
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Share of External Debt Stocks of Low- and Middle-Income Countries, 2012-22'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: 'Percent'
+                        }
+                    }
+                }
+            }
+        });
+
+        // SDR Allocations Chart
+        const sdrAllocationsCtx = document.getElementById('sdrAllocationsChart').getContext('2d');
+        new Chart(sdrAllocationsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['East Asia and Pacific', 'Europe and Central Asia', 'Latin America and Caribbean', 'Middle East and North Africa', 'South Asia', 'Sub-Saharan Africa'],
+                datasets: [{
+                    label: 'SDR / General Government External Debt Stock',
+                    data: [12, 14, 8, 12, 9, 8],
+                    backgroundColor: 'rgba(65, 105, 225, 0.8)', // Royal Blue
+                }, {
+                    label: 'SDR / International Reserves',
+                    data: [2, 5, 8, 9, 5, 23],
+                    backgroundColor: 'rgba(255, 165, 0, 0.8)', // Orange
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'SDR Allocations as a Share of General Government External Debt and International Reserves, by Region, 2022'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Percent'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
