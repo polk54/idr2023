@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Focused Interactive Data Visualization Dashboard</title>
+    <title>Interactive Data Visualization Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <style>
         body {
@@ -11,14 +11,31 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
+        }
+        #topbar {
+            display: none;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+        #hamburger {
+            font-size: 30px;
+            cursor: pointer;
         }
         #sidebar {
-            width: 250px;
+            width: 300px;
             height: 100vh;
             background-color: #f0f0f0;
             padding: 20px;
             box-sizing: border-box;
             overflow-y: auto;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: 0.3s;
+        }
+        #sidebar button.active {
+            background-color: #89B140;
         }
         #content {
             flex-grow: 1;
@@ -26,6 +43,7 @@
             box-sizing: border-box;
             height: 100vh;
             overflow-y: auto;
+            margin-left: 300px;
         }
         .visualization {
             display: none;
@@ -39,19 +57,43 @@
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
-            background-color: #4CAF50;
+            background-color: #006463;
             color: white;
             border: none;
             cursor: pointer;
             text-align: left;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #004a4a;
         }
         .chart-container {
             position: relative;
             height: 60vh;
             width: 100%;
+        }
+        .source-note {
+            font-size: 0.8em;
+            font-style: italic;
+            color: #666;
+        }
+        @media (max-width: 768px) {
+            #topbar {
+                display: block;
+            }
+            #sidebar {
+                width: 0;
+                padding: 0;
+            }
+            #content {
+                margin-left: 0;
+            }
+            .sidebar-open #sidebar {
+                width: 250px;
+                padding: 20px;
+            }
+            .sidebar-open #content {
+                margin-left: 250px;
+            }
         }
     </style>
 
@@ -67,42 +109,152 @@
 </xml><![endif]-->
 </head>
 <body>
+    <div id="topbar">
+        <span id="hamburger" onclick="toggleSidebar()">☰</span>
+    </div>
     <div id="sidebar">
-        <button onclick="showVisualization('externalDebtStocks')">External Debt Stocks</button>
-        <button onclick="showVisualization('externalDebtShare')">Share of External Debt Stocks</button>
-        <button onclick="showVisualization('sdrAllocations')">SDR Allocations</button>
+        <button onclick="showVisualization('externalDebtStocks')">Figure 1.1: External Debt Stocks</button>
+        <button onclick="showVisualization('externalDebtShare')">Figure 1.2: Share of External Debt Stocks</button>
+        <button onclick="showVisualization('sdrAllocations')">Figure B1.1.1: SDR Allocations</button>
+        <button onclick="showVisualization('debtComposition')">Figure 1.3: Debt Composition</button>
+        <button onclick="showVisualization('creditorComposition')">Figure 1.4: Creditor Composition</button>
+        <button onclick="showVisualization('debtToGNI')">Figure 1.5: Debt-to-GNI Ratios</button>
+        <button onclick="showVisualization('debtAndGNIByGroup')">Figure 1.6: Debt and GNI by Group</button>
+        <button onclick="showVisualization('debtAndGNIByRegion')">Figure 1.7: Debt and GNI by Region</button>
+        <button onclick="showVisualization('debtAndExports')">Figure 1.8: Debt and Exports</button>
+        <button onclick="showVisualization('debtService')">Figure 1.9: Debt Service</button>
+        <button onclick="showVisualization('netDebtInflows')">Figure 1.10: Net Debt Inflows</button>
+        <button onclick="showVisualization('netFinancialFlows')">Figure B1.3.1: Net Financial Flows to China</button>
+        <button onclick="showVisualization('bondFlows')">Figure 1.11: Bond Flows by Borrower Type</button>
+        <button onclick="showVisualization('netFlows')">Figure 1.12: Net Flows to IDA-Eligible Countries</button>
+        <button onclick="showVisualization('netEquityInflows')">Figure 1.13: Net Equity Inflows and External Debt Flows</button>
+        <button onclick="showVisualization('loanCommitments')">Figure 1.14: Loan Commitments to IDA-Eligible and IBRD Countries</button>
     </div>
     <div id="content">
         <div id="externalDebtStocks" class="visualization active">
             <h2>Figure 1.1 Percent Change in External Debt Stocks of Low- and Middle-income Countries, 2012-22</h2>
             <div class="chart-container"><canvas id="externalDebtStocksChart"></canvas></div>
-            <p>Source: World Bank International Debt Statistics database.</p>
-            <p>Note: IDA = International Development Association.</p>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+            <p class="source-note">Note: IDA = International Development Association.</p>
         </div>
         <div id="externalDebtShare" class="visualization">
             <h2>Figure 1.2 Share of External Debt Stocks of Low- and Middle-Income Countries, 2012-22</h2>
             <div class="chart-container"><canvas id="externalDebtShareChart"></canvas></div>
-            <p>Source: World Bank International Debt Statistics database.</p>
-            <p>Note: The top ten largest borrowers are based on total external debt stock at year-end 2022. The top ten largest borrowers excluding China are: Argentina, Brazil, Colombia, India, Indonesia, Mexico, Russian Federation, South Africa, Thailand and Türkiye.</p>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+            <p class="source-note">Note: The top ten largest borrowers are based on total external debt stock at year-end 2022. The top ten largest borrowers excluding China are: Argentina, Brazil, Colombia, India, Indonesia, Mexico, Russian Federation, South Africa, Thailand and Türkiye.</p>
         </div>
         <div id="sdrAllocations" class="visualization">
             <h2>Figure B1.1.1 SDR Allocations as a Share of General Government External Debt and International Reserves, by Region, 2022</h2>
             <div class="chart-container"><canvas id="sdrAllocationsChart"></canvas></div>
-            <p>Sources: World Bank Debtor Reporting System and International Monetary Fund</p>
-            <p>Note: SDR = special drawing rights.</p>
+            <p class="source-note">Sources: World Bank Debtor Reporting System and International Monetary Fund</p>
+            <p class="source-note">Note: SDR = special drawing rights.</p>
+        </div>
+        <div id="debtComposition" class="visualization">
+            <h2>Figure 1.3: Composition of Debt Stock in Low- and Middle-Income Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="debtCompositionChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+            <p class="source-note">Note: IMF = International Monetary Fund; PNG = private nonguaranteed; PPG = public and publicly guaranteed.</p>
+        </div>
+        <div id="creditorComposition" class="visualization">
+            <h2>Figure 1.4: Creditor Composition of Long-Term Public and Publicly Guaranteed External Debt for IDA-Eligible Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="creditorCompositionChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+        </div>
+        <div id="debtToGNI" class="visualization">
+            <h2>Figure 1.5: External Debt-to-GNI Ratios for Low- and Middle-Income and IDA-Eligible Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="debtToGNIChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+            <p class="source-note">Note: GNI = gross national income; IDA = International Development Association.</p>
+        </div>
+        <div id="debtAndGNIByGroup" class="visualization">
+            <h2>Figure 1.6: Change in External Debt Stock and GNI, by Income and Lending Group, 2012-22</h2>
+            <div class="chart-container"><canvas id="debtAndGNIByGroupChart"></canvas></div>
+            <p class="source-note">Sources: World Bank International Debt Statistics and World Development Indicators databases.</p>
+            <p class="source-note">Note: GNI = gross national income; IBRD = International Bank for Reconstruction and Development; IDA = International Development Association</p>
+        </div>
+        <div id="debtAndGNIByRegion" class="visualization">
+            <h2>Figure 1.7: Change in External Debt Stock and GNI, by Region, 2012-22</h2>
+            <div class="chart-container"><canvas id="debtAndGNIByRegionChart"></canvas></div>
+            <p class="source-note">Sources: World Bank International Debt Statistics and World Development Indicators databases.</p>
+            <p class="source-note">Note: GNI = gross national income.</p>
+        </div>
+        <div id="debtAndExports" class="visualization">
+            <h2>Figure 1.8: Change in External Debt Stock and Exports, by Region, 2012-22</h2>
+            <div class="chart-container"><canvas id="debtAndExportsChart"></canvas></div>
+            <p class="source-note">Sources: World Bank International Debt Statistics database; International Monetary Fund Balance of Payments database.</p>
+            <p class="source-note">Note: GNI = gross national income; IBRD = International Bank for Reconstruction and Development; IDA = International Development Association.</p>
+        </div>
+        <div id="debtService" class="visualization">
+            <h2>Figure 1.9: Total Debt Service and Interest Payments on External Debt for IDA-Eligible Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="debtServiceChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+            <p class="source-note">Note: IDA = International Development Association.</p>
+        </div>
+        <div id="netDebtInflows" class="visualization">
+            <h2>Figure 1.10: Net Debt Inflows by Maturity in Low- and Middle-Income Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="netDebtInflowsChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+        </div>
+        <div id="netFinancialFlows" class="visualization">
+            <h2>Figure B1.3.1 Net Financial Flows to China, 2012-22</h2>
+            <div class="chart-container"><canvas id="netFinancialFlowsChart"></canvas></div>
+            <p class="source-note">Sources: World Bank International Debt Statistics database, International Monetary Fund, State Administration of Foreign Exchange of the People's Republic of China, and Bank for International Settlements.</p>
+        </div>
+        <div id="bondFlows" class="visualization">
+            <h2>Figure 1.11: Bond Flows by Borrower Type to Low- and Middle-Income Countries (excluding China), 2021-22</h2>
+            <div class="chart-container"><canvas id="bondFlowsChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database</p>
+            <p class="source-note">Note: PNG = private nonguaranteed; PPG = public and publicly guaranteed.</p>
+        </div>
+        <div id="netFlows" class="visualization">
+            <h2>Figure 1.12: Net Flows to IDA-Eligible Countries, by Region and Creditor Type, 2022</h2>
+            <div class="chart-container"><canvas id="netFlowsChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database</p>
+            <p class="source-note">Note: IDA = International Development Association; IMF = International Monetary Fund.</p>
+        </div>
+        <div id="netEquityInflows" class="visualization">
+            <h2>Figure 1.13: Net Equity Inflows and External Debt Flows to Low- and Middle-Income Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="netEquityInflowsChart"></canvas></div>
+            <p class="source-note">Sources: International Monetary Fund and United Nations Conference on Trade and Development.</p>
+        </div>
+        <div id="loanCommitments" class="visualization">
+            <h2>Figure 1.14: Loan Commitments to IDA-Eligible and IBRD Countries, 2012-22</h2>
+            <div class="chart-container"><canvas id="loanCommitmentsChart"></canvas></div>
+            <p class="source-note">Source: World Bank International Debt Statistics database.</p>
+            <p class="source-note">Note: IBRD = International Bank for Reconstruction and Development; IDA = International Development Association.</p>
         </div>
     </div>
 
     <script>
+
         function showVisualization(id) {
             const visualizations = document.getElementsByClassName('visualization');
             for (let vis of visualizations) {
                 vis.classList.remove('active');
             }
             document.getElementById(id).classList.add('active');
+
+            // Remove 'active' class from all buttons
+            const buttons = document.querySelectorAll('#sidebar button');
+            buttons.forEach(button => button.classList.remove('active'));
+
+            // Add 'active' class to the clicked button
+            const activeButton = document.querySelector(`#sidebar button[onclick="showVisualization('${id}')"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+
+            if (window.innerWidth <= 768) {
+                // Always close the sidebar on mobile
+                document.body.classList.remove('sidebar-open');
+            }
         }
 
-        // External Debt Stocks Chart
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-open');
+        }
+
+        // 1.1 External Debt Stocks Chart
         const externalDebtStocksCtx = document.getElementById('externalDebtStocksChart').getContext('2d');
         new Chart(externalDebtStocksCtx, {
             type: 'bar',
@@ -111,15 +263,15 @@
                 datasets: [{
                     label: 'Average 2012 to 2019',
                     data: [7, 16, 5, 10, 5],
-                    backgroundColor: 'rgba(65, 105, 225, 0.8)', // Royal Blue
+                    backgroundColor: '#6F9799',
                 }, {
                     label: '2021',
                     data: [6, 10, 5, 10, 3],
-                    backgroundColor: 'rgba(255, 165, 0, 0.8)', // Orange
+                    backgroundColor: '#89B140',
                 }, {
                     label: '2022',
                     data: [-3, -12, 0, 3, 0],
-                    backgroundColor: 'rgba(34, 139, 34, 0.8)', // Forest Green
+                    backgroundColor: '#006463',
                 }]
             },
             options: {
@@ -127,7 +279,7 @@
                 maintainAspectRatio: false,
                 plugins: {
                     title: {
-                        display: true,
+                        display: false,
                         text: 'Percent Change in External Debt Stocks of Low- and Middle-income Countries, 2012-22'
                     },
                     tooltip: {
@@ -136,55 +288,33 @@
                     }
                 },
                 scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Percent'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Share of External Debt Stocks Chart
-        const externalDebtShareCtx = document.getElementById('externalDebtShareChart').getContext('2d');
-        new Chart(externalDebtShareCtx, {
-            type: 'bar',
-            data: {
-                labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
-                datasets: [{
-                    label: 'Top ten countries, excluding China',
-                    data: [53, 51, 49, 51, 51, 49, 47, 46, 44, 42, 43],
-                    backgroundColor: 'rgba(65, 105, 225, 0.8)', // Royal Blue
-                }, {
-                    label: 'China',
-                    data: [20, 23, 26, 21, 21, 23, 25, 26, 27, 29, 27],
-                    backgroundColor: 'rgba(255, 165, 0, 0.8)', // Orange
-                }, {
-                    label: 'Other low- and middle-income countries',
-                    data: [27, 26, 25, 28, 28, 28, 28, 28, 29, 29, 31],
-                    backgroundColor: 'rgba(34, 139, 34, 0.8)', // Forest Green
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Share of External Debt Stocks of Low- and Middle-Income Countries, 2012-22'
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                    }
-                },
-                scales: {
                     x: {
-                        stacked: true,
+                        ticks: {
+                            callback: function(value, index) {
+                                const label = this.getLabelForValue(value);
+                                const words = label.split(' ');
+                                const lines = [];
+                                let line = '';
+
+                                for (let word of words) {
+                                    if (line.length + word.length <= 20) {
+                                        line += (line ? ' ' : '') + word;
+                                    } else {
+                                        lines.push(line);
+                                        line = word;
+                                    }
+                                }
+                                if (line) {
+                                    lines.push(line);
+                                }
+
+                                return lines;
+                            },
+                            maxRotation: 0,
+                            minRotation: 0
+                        }
                     },
                     y: {
-                        stacked: true,
                         title: {
                             display: true,
                             text: 'Percent'
@@ -194,45 +324,714 @@
             }
         });
 
-        // SDR Allocations Chart
-        const sdrAllocationsCtx = document.getElementById('sdrAllocationsChart').getContext('2d');
-        new Chart(sdrAllocationsCtx, {
-            type: 'bar',
-            data: {
-                labels: ['East Asia and Pacific', 'Europe and Central Asia', 'Latin America and Caribbean', 'Middle East and North Africa', 'South Asia', 'Sub-Saharan Africa'],
-                datasets: [{
-                    label: 'SDR / General Government External Debt Stock',
-                    data: [12, 14, 8, 12, 9, 8],
-                    backgroundColor: 'rgba(65, 105, 225, 0.8)', // Royal Blue
-                }, {
-                    label: 'SDR / International Reserves',
-                    data: [2, 5, 8, 9, 5, 23],
-                    backgroundColor: 'rgba(255, 165, 0, 0.8)', // Orange
-                }]
+// 1.2 Share of External Debt Stocks Chart
+const externalDebtShareCtx = document.getElementById('externalDebtShareChart').getContext('2d');
+new Chart(externalDebtShareCtx, {
+    type: 'bar',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'Top ten countries, excluding China',
+            data: [53, 51, 49, 51, 51, 49, 47, 46, 44, 42, 43],
+            backgroundColor: '#6F9799',
+        }, {
+            label: 'China',
+            data: [20, 23, 26, 21, 21, 23, 25, 26, 27, 29, 27],
+            backgroundColor: '#89B140',
+        }, {
+            label: 'Other low- and middle-income countries',
+            data: [27, 26, 25, 28, 28, 28, 28, 28, 29, 29, 30],
+            backgroundColor: '#006463',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+                text: 'Share of External Debt Stocks of Low- and Middle-Income Countries, 2012-22'
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'SDR Allocations as a Share of General Government External Debt and International Reserves, by Region, 2022'
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                    }
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            x: {
+                stacked: true,
+            },
+            y: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'Percent'
                 },
-                scales: {
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Percent'
-                        }
-                    }
+                max: 100
+            }
+        }
+    }
+});
+
+// B1.1.1 SDR Allocations Chart
+const sdrAllocationsCtx = document.getElementById('sdrAllocationsChart').getContext('2d');
+new Chart(sdrAllocationsCtx, {
+    type: 'bar',
+    data: {
+        labels: ['East Asia and Pacific', 'Europe and Central Asia', 'Latin America and Caribbean', 'Middle East and North Africa', 'South Asia', 'Sub-Saharan Africa'],
+        datasets: [{
+            label: 'SDR / General Government External Debt Stock',
+            data: [12, 14, 8, 12, 9, 8],
+            backgroundColor: '#6F9799',
+        }, {
+            label: 'SDR / International Reserves',
+            data: [2, 5, 8, 9, 5, 23],
+            backgroundColor: '#89B140',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+                text: 'SDR Allocations as a Share of General Government External Debt and International Reserves, by Region, 2022'
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Percent'
                 }
             }
-        });
-    </script>
+        }
+    }
+});
+
+// 1.3 Debt Composition Chart
+const debtCompositionCtx = document.getElementById('debtCompositionChart').getContext('2d');
+new Chart(debtCompositionCtx, {
+    type: 'bar',
+    data: {
+        labels: ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'PPG (incl. IMF)',
+            data: [39.3, 36.1, 36.1, 34.7, 34.7, 37.7, 38.2, 38.9, 39.3, 40.1, 41.6, 42.1, 43.0],
+            backgroundColor: '#6F9799',
+        }, {
+            label: 'PNG',
+            data: [33.7, 34.9, 35.6, 34.8, 34.9, 37.5, 38.7, 35.8, 34.1, 34.0, 33.6, 31.7, 30.8],
+            backgroundColor: '#89B140',
+        }, {
+            label: 'Short-term',
+            data: [27.0, 29.0, 28.3, 30.5, 30.5, 24.9, 23.1, 25.3, 26.6, 25.8, 24.8, 26.3, 26.2],
+            backgroundColor: '#006463',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            x: {
+                stacked: true,
+            },
+            y: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'Percent'
+                },
+                max: 100
+            }
+        }
+    }
+});
+
+// 1.4Creditor Composition Chart
+const creditorCompositionCtx = document.getElementById('creditorCompositionChart').getContext('2d');
+new Chart(creditorCompositionCtx, {
+    type: 'line',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'Bilateral creditors',
+            data: [102.6, 109.9, 118.6, 128.0, 137.8, 154.6, 170.6, 185.4, 203.8, 214.0, 213.2],
+            borderColor: '#6F9799',
+            backgroundColor: '#6F9799',
+            fill: false,
+        }, {
+            label: 'Multilateral creditors',
+            data: [172.9, 179.0, 180.0, 185.5, 193.2, 219.5, 230.4, 253.2, 304.1, 345.5, 362.5],
+            borderColor: '#89B140',
+            backgroundColor: '#89B140',
+            fill: false,
+        }, {
+            label: 'Bondholders',
+            data: [10.3, 15.9, 28.4, 35.0, 38.9, 50.8, 65.0, 71.9, 75.4, 89.5, 88.6],
+            borderColor: '#006463',
+            backgroundColor: '#006463',
+            fill: false,
+        }, {
+            label: 'Other private creditors',
+            data: [20.5, 26.7, 29.9, 33.9, 35.3, 45.3, 49.4, 54.1, 63.5, 67.2, 63.7],
+            borderColor: '#D3D3D3',
+            backgroundColor: '#D3D3D3',
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                }
+            }
+        }
+    }
+});
+
+// 1.5 Debt-to-GNI Ratios Chart
+const debtToGNICtx = document.getElementById('debtToGNIChart').getContext('2d');
+new Chart(debtToGNICtx, {
+    type: 'line',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'Low-income countries',
+            data: [29, 35, 34, 37, 37, 37, 46, 46, 51, 50, 45],
+            borderColor: '#6F9799',
+            backgroundColor: '#6F9799',
+            fill: false,
+        }, {
+            label: 'Middle-income countries',
+            data: [23, 24, 25, 25, 25, 26, 26, 26, 28, 26, 24],
+            borderColor: '#89B140',
+            backgroundColor: '#89B140',
+            fill: false,
+        }, {
+            label: 'IDA-eligible countries',
+            data: [25, 26, 26, 28, 29, 33, 34, 35, 40, 40, 39],
+            borderColor: '#006463',
+            backgroundColor: '#006463',
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Percent'
+                }
+            }
+        }
+    }
+});
+
+// 1.6 Debt and GNI by Group Chart
+const debtAndGNIByGroupCtx = document.getElementById('debtAndGNIByGroupChart').getContext('2d');
+new Chart(debtAndGNIByGroupCtx, {
+    type: 'bar',
+    data: {
+        labels: ['IDA-eligible', 'IBRD-only (excluding China)', 'Low- and middle-income (excluding China)', 'Low-income', 'Lower middle-income', 'Upper middle-income (excluding China)'],
+        datasets: [{
+            label: 'External Debt Stock',
+            data: [134, 36, 46, 109, 89, 28],
+            backgroundColor: '#6F9799',
+        }, {
+            label: 'GNI',
+            data: [53, 17, 21, 33, 48, 7],
+            backgroundColor: '#89B140',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Percent change'
+                }
+            }
+        }
+    }
+});
+
+// 1.7 Debt and GNI by Region Chart
+const debtAndGNIByRegionCtx = document.getElementById('debtAndGNIByRegionChart').getContext('2d');
+new Chart(debtAndGNIByRegionCtx, {
+    type: 'bar',
+    data: {
+        labels: ['East Asia & Pacific (excluding China)', 'Europe & Central Asia', 'Latin America & Caribbean', 'Middle East & North Africa', 'South Asia', 'Sub-Saharan Africa'],
+        datasets: [{
+            label: 'External Debt Stock',
+            data: [61, 1, 54, 95, 73, 96],
+            backgroundColor: '#6F9799',
+        }, {
+            label: 'GNI',
+            data: [46, 6, -1, -3, 88, 23],
+            backgroundColor: '#89B140',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Percent change'
+                }
+            }
+        }
+    }
+});
+
+// 1.8 Debt and Exports Chart
+const debtAndExportsCtx = document.getElementById('debtAndExportsChart').getContext('2d');
+new Chart(debtAndExportsCtx, {
+    type: 'bar',
+    data: {
+        labels: ['IDA-eligible', 'IBRD-only (excluding China)', 'Low & middle income (excluding China)', 'Low income', 'Lower middle income', 'Upper middle income (excluding China)'],
+        datasets: [{
+            label: 'External Debt Stock',
+            data: [134, 36, 46, 109, 89, 28],
+            backgroundColor: '#6F9799',
+        }, {
+            label: 'Exports',
+            data: [36, 37, 37, 50, 45, 32],
+            backgroundColor: '#89B140',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'Percent change'
+                }
+            }
+        }
+    }
+});
+
+// 1.9 Debt Service Chart
+const debtServiceCtx = document.getElementById('debtServiceChart').getContext('2d');
+new Chart(debtServiceCtx, {
+    type: 'line',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'Total debt service',
+            data: [26, 32, 39, 33, 44, 51, 60, 81, 65, 85, 89],
+            borderColor: '#6F9799',
+            backgroundColor: '#6F9799',
+            fill: false,
+        }, {
+            label: 'Interest payments',
+            data: [6, 8, 8, 10, 12, 15, 18, 22, 18, 20, 24],
+            borderColor: '#89B140',
+            backgroundColor: '#89B140',
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                }
+            }
+        }
+    }
+});
+
+// 1.10 Net Debt Inflows Chart
+const netDebtInflowsCtx = document.getElementById('netDebtInflowsChart').getContext('2d');
+new Chart(netDebtInflowsCtx, {
+    type: 'line',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'Long-term',
+            data: [488.6, 465.6, 406.0, 177.3, 279.3, 438.1, 356.6, 334.9, 373.3, 264.3, -94.5],
+            borderColor: '#6F9799',
+            backgroundColor: '#6F9799',
+            fill: false,
+        }, {
+            label: 'Short-term',
+            data: [123.9, 360.3, 135.9, -500.4, -48.4, 333.4, 212.8, 34.1, 7.1, 291.4, -90.6],
+            borderColor: '#89B140',
+            backgroundColor: '#89B140',
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                }
+            }
+        }
+    }       
+});
+// B1.3.1 Net Financial Flows to China Chart
+const netFinancialFlowsCtx = document.getElementById('netFinancialFlowsChart').getContext('2d');
+new Chart(netFinancialFlowsCtx, {
+    type: 'line',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'Net debt inflows',
+            data: [72.3, 328.7, 261.2, -392.6, 10.0, 317.8, 275.3, 144.0, 210.4, 344.7, -296.8],
+            borderColor: '#6F9799',
+            backgroundColor: '#6F9799',
+            fill: false,
+        }, {
+            label: 'Net equity inflows',
+            data: [244.4, 298.0, 262.7, 226.7, 188.3, 176.8, 246.6, 207.2, 301.1, 383.5, 194.1],
+            borderColor: '#89B140',
+            backgroundColor: '#89B140',
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                }
+            }
+        }
+    }
+});
+
+// 1.11 Bond Flows Chart
+const bondFlowsCtx = document.getElementById('bondFlowsChart').getContext('2d');
+new Chart(bondFlowsCtx, {
+    type: 'bar',
+    data: {
+        labels: ['PPG Net flows', 'PPG Amortization', 'PPG Disbursements', 'PNG Net flows', 'PNG Amortization', 'PNG Disbursements'],
+        datasets: [{
+            label: '2021',
+            data: [28.2, -115.4, 143.7, 23.3, -50.3, 73.6],
+            backgroundColor: '#6F9799',
+        }, {
+            label: '2022',
+            data: [-35.3, -105.0, 69.7, -20.6, -52.4, 31.8],
+            backgroundColor: '#89B140',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                }
+            }
+        }
+    }
+});
+
+// 1.12 Net Flows Chart
+const netFlowsCtx = document.getElementById('netFlowsChart').getContext('2d');
+new Chart(netFlowsCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Bilateral', 'Multilateral (incl. IMF)', 'Bondholders', 'Other Private Creditors'],
+        datasets: [{
+            label: 'East Asia & Pacific',
+            data: [1.2, 1.2, 0.4, -0.9],
+            backgroundColor: '#D3D3D3',
+        }, {
+            label: 'Europe & Central Asia',
+            data: [0.0, 3.2, 0.0, 3.4],
+            backgroundColor: '#FFF700',
+        }, {
+            label: 'Latin America & Caribbean',
+            data: [0.4, 1.2, -0.2, -0.1],
+            backgroundColor: '#90EE90',
+        }, {
+            label: 'Middle East & North Africa',
+            data: [0.0, 0.0, 0.0, 0.0],
+            backgroundColor: '#FFD700',
+        }, {
+            label: 'South Asia',
+            data: [5.8, 8.2, -1.2, -3.0],
+            backgroundColor: '#6F9799',
+        }, {
+            label: 'Sub-Saharan Africa',
+            data: [0.4, 16.6, 0.1, 7.6],
+            backgroundColor: '#006463',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+                text: 'Figure 1.12: Net Flows to IDA-Eligible Countries, by Region and Creditor Type, 2022',
+                font: {
+                    size: 16,
+                    weight: 'bold'
+                }
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            },
+            legend: {
+                position: 'top',
+            },
+        },
+        scales: {
+            x: {
+                stacked: true,
+            },
+            y: {
+                stacked: true,
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                },
+                suggestedMax: 35,
+            }
+        }
+    }
+});
+
+// 1.13 Net Equity Inflows and External Debt Flows Chart
+const netEquityInflowsCtx = document.getElementById('netEquityInflowsChart').getContext('2d');
+new Chart(netEquityInflowsCtx, {
+    type: 'line',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'Foreign Direct Investment',
+            data: [539, 565, 494, 488, 454, 456, 483, 488, 462, 665, 479],
+            borderColor: '#6F9799',
+            backgroundColor: '#6F9799',
+            fill: false,
+        }, {
+            label: 'Portfolio equity',
+            data: [97, 69, 83, 21, 45, 67, 38, 48, 61, 58, 11],
+            borderColor: '#89B140',
+            backgroundColor: '#89B140',
+            fill: false,
+        }, {
+            label: 'Private nonguaranteed debt flows',
+            data: [269, 254, 204, 61, 140, 158, 110, 121, 116, 85, -145],
+            borderColor: '#006463',
+            backgroundColor: '#006463',
+            fill: false,
+        }, {
+            label: 'Public and publicly guaranteed debt flows',
+            data: [226, 223, 204, 109, 133, 275, 216, 193, 212, 178, 37],
+            borderColor: '#D3D3D3',
+            backgroundColor: '#D3D3D3',
+            fill: false,
+        }, {
+            label: 'Short-term debt flows',
+            data: [124, 360, 136, -500, -48, 333, 213, 34, 7, 291, -91],
+            borderColor: '#FFA500',
+            backgroundColor: '#FFA500',
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                }
+            }
+        }
+    }
+});
+
+// 1.14 Loan Commitments Chart
+const loanCommitmentsCtx = document.getElementById('loanCommitmentsChart').getContext('2d');
+new Chart(loanCommitmentsCtx, {
+    type: 'line',
+    data: {
+        labels: ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022'],
+        datasets: [{
+            label: 'IDA Eligible',
+            data: [52.2, 61.4, 71.9, 64.7, 77.9, 92.8, 83.0, 88.1, 86.3, 96.2, 67.1],
+            borderColor: '#6F9799',
+            backgroundColor: '#6F9799',
+            fill: false,
+        }, {
+            label: 'IBRD-only Borrowers',
+            data: [330.0, 339.8, 324.6, 323.1, 345.3, 390.1, 474.4, 383.9, 462.0, 386.4, 305.1],
+            borderColor: '#89B140',
+            backgroundColor: '#89B140',
+            fill: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: false,
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        },
+        scales: {
+            y: {
+                title: {
+                    display: true,
+                    text: 'US$ (billion)'
+                }
+            }
+        }
+    }
+});
+
+// Add event listeners to sidebar buttons
+document.querySelectorAll('#sidebar button').forEach(button => {
+    button.addEventListener('click', function() {
+        const targetId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+        showVisualization(targetId);
+    });
+});
+
+// Initialize the dashboard by showing the first visualization
+showVisualization('externalDebtStocks');
+document.querySelector('#sidebar button').classList.add('active');
+</script>
 </body>
 </html>
