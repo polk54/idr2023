@@ -73,7 +73,7 @@ a {
     text-decoration: none;
   }
 a:hover {
-background-color: #004a4a;
+    color: #004a4a;
 }
 
 @media (max-width: 768px) {
